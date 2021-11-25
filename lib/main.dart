@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_flutter_app/result.dart';
 import './quiz.dart';
 
 void main() => runApp(const MyApp());
@@ -14,9 +15,18 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   var _questionIdx = 0;
-  void _answerQuestion() {
+  var _totalScore = 0;
+  void _answerQuestion(int score) {
+    _totalScore = _totalScore + score;
     setState(() {
       _questionIdx = _questionIdx + 1;
+    });
+  }
+
+  void _resetQuiz() {
+    setState(() {
+      _questionIdx = 0;
+      _totalScore = 0;
     });
   }
 
@@ -25,15 +35,27 @@ class _MyAppState extends State<MyApp> {
     const _questions = [
       {
         'questionText': 'What\'s your favorite color?',
-        'answers': ['Red', 'Green', 'Blue']
+        'answers': [
+          {'text': 'Red', 'score': 3},
+          {'text': 'Blue', 'score': 5},
+          {'text': 'Green', 'score': 7}
+        ]
       },
       {
         'questionText': 'What\'s your favorite animal?',
-        'answers': ['Dog', 'Cat', 'Pig']
+        'answers': [
+          {'text': 'Dog', 'score': 6},
+          {'text': 'Cat', 'score': 3},
+          {'text': 'Pig', 'score': 9}
+        ]
       },
       {
         'questionText': 'What\'s your favorite Sport?',
-        'answers': ['Football', 'Volleyball', 'Basketball']
+        'answers': [
+          {'text': 'Football', 'score': 7},
+          {'text': 'Basketball', 'score': 3},
+          {'text': 'Volleyball', 'score': 2}
+        ]
       }
     ];
     return MaterialApp(
@@ -43,16 +65,12 @@ class _MyAppState extends State<MyApp> {
           centerTitle: true,
         ),
         body: _questionIdx < _questions.length
-            ? Quiz(_answerQuestion, _questions[_questionIdx], _questionIdx)
-            : Center(
-                child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _questionIdx = 0;
-                      });
-                    },
-                    child: const Text('RESET')),
-              ),
+            ? Quiz(
+                answerQuestion: _answerQuestion,
+                questionIdx: _questionIdx,
+                questions: _questions,
+              )
+            : Result(_totalScore, _resetQuiz),
       ),
     );
   }
